@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
  
 [RequireComponent(typeof(CharacterScript))]
@@ -41,8 +41,6 @@ public class CharacterInputScript : MonoBehaviour {
         }
         */
     }
- 
-
 
     /*
     ========================
@@ -52,15 +50,28 @@ public class CharacterInputScript : MonoBehaviour {
     // FixedUpdate is used instead of Update when dealing with Rigidbody.
     void FixedUpdate()
     {
-        float xMovement = Input.GetAxis("Horizontal");
-        float yMovement = Input.GetAxis("Vertical");
- 
-        Vector2 movement = new Vector2(xMovement, yMovement);
- 
-        if (movement.magnitude > 0) {
-            this.heading = movement.normalized;
-        }
+        // -------------------- MOVEMENT --------------------------
+        Vector2 movement = new Vector2();
 
+        // Can move with keyboard or mouse, mouse being the priority
+        if ( Input.GetButton("Fire1") ) {
+            Vector2 currentPosition = transform.position;
+            Vector2 moveToward = Camera.main.ScreenToWorldPoint( Input.mousePosition );
+            movement = moveToward - currentPosition;
+        } else {
+            movement = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        }
+        
+        this.heading = movement.normalized;
+ 
         character.Move(heading);
+
+        // ------------------ ATTACK ------------------------
+        if ( Input.GetButton("Space") ) {    // configured in the Input Manager
+            ResourceManager.MainPlayer.SetFlamethrowerEmitter(true);
+        } else {
+            ResourceManager.MainPlayer.SetFlamethrowerEmitter(false);
+        } 
+
     }
 }

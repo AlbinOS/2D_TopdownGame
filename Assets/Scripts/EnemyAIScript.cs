@@ -46,6 +46,12 @@ public class EnemyAIScript : MonoBehaviour {
 	private void Update () {
 		// increment our damage timer by the time it took to complete the last frame
 		this.attackSpeedTimer += Time.deltaTime;
+			
+		// If the enemy can attack again, set the attacking flag to false (this should stop the attack animation)
+		if ( this.attackSpeedTimer > this.attackSpeed ) {
+			this.character.SetAttackingFlag(false);
+		}
+		Debug.Log("ATTACKING FLAG : " + character.GetAttackingFlag());
 	}
 
  
@@ -109,7 +115,8 @@ public class EnemyAIScript : MonoBehaviour {
     private void OnCollisionEnter2D(Collision2D other) {
   
 		if ( other.gameObject.tag == "Player" && this.attackSpeedTimer > this.attackSpeed ) {
-			other.gameObject.GetComponent<CharacterScript>().AdjustHealth( -1 * this.damage );
+			character.SetAttackingFlag(true);
+			other.gameObject.GetComponent<HeroScript>().InflictDamage( -1 * this.damage, true );
 			this.attackSpeedTimer = 0.0f;
 		}
  
